@@ -62,6 +62,8 @@ set(PROJECT_SOURCES
     src/Mesh.cpp
     src/ModelLoader.cpp
     src/GeometryUtils.cpp
+    src/GeometryGenerator.cpp
+    src/OBJLoader.cpp
     ${IMGUI_SOURCES}
 )
 
