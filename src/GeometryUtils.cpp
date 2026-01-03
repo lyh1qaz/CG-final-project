@@ -143,34 +143,57 @@ Mesh* GeometryUtils::CreateCylinder(float radius, float height, int segments)
     std::vector<Texture> textures;
 
     float halfHeight = height / 2.0f;
+    int vertexCount = 0;
 
-    // Generate side vertices
+    // --- Generate side vertices (with correct side normals) --- 
     for (int i = 0; i <= segments; i++) {
         float angle = (float)i / segments * 2.0f * PI;
         float cosAngle = cos(angle);
         float sinAngle = sin(angle);
 
-        // Bottom vertex
+        // Bottom vertex (side) - uses side normal
         glm::vec3 bottomPos(radius * cosAngle, -halfHeight, radius * sinAngle);
-        glm::vec3 bottomNormal = glm::normalize(glm::vec3(cosAngle, 0.0f, sinAngle)); // Outward normal
-        vertices.push_back({bottomPos, bottomNormal, glm::vec2((float)i / segments, 0.0f)});
+        glm::vec3 sideNormal = glm::normalize(glm::vec3(cosAngle, 0.0f, sinAngle)); // Outward normal for side
+        vertices.push_back({bottomPos, sideNormal, glm::vec2((float)i / segments, 0.0f)});
 
-        // Top vertex
+        // Top vertex (side) - uses side normal
         glm::vec3 topPos(radius * cosAngle, halfHeight, radius * sinAngle);
-        glm::vec3 topNormal = glm::normalize(glm::vec3(cosAngle, 0.0f, sinAngle)); // Outward normal
-        vertices.push_back({topPos, topNormal, glm::vec2((float)i / segments, 1.0f)});
+        vertices.push_back({topPos, sideNormal, glm::vec2((float)i / segments, 1.0f)});
     }
 
-    // Generate top and bottom centers
-    // Top center (normal: +Y)
-    vertices.push_back({glm::vec3(0.0f, halfHeight, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f), glm::vec2(0.5f, 0.5f)});
-    // Bottom center (normal: -Y)
+    // --- Generate bottom face vertices (with correct bottom normals) --- 
+    // Bottom center
+    int bottomCenterIdx = vertices.size();
     vertices.push_back({glm::vec3(0.0f, -halfHeight, 0.0f), glm::vec3(0.0f, -1.0f, 0.0f), glm::vec2(0.5f, 0.5f)});
+    
+    // Bottom edge vertices (with bottom normal)
+    int bottomEdgeStartIdx = vertices.size();
+    for (int i = 0; i <= segments; i++) {
+        float angle = (float)i / segments * 2.0f * PI;
+        float cosAngle = cos(angle);
+        float sinAngle = sin(angle);
+        
+        glm::vec3 pos(radius * cosAngle, -halfHeight, radius * sinAngle);
+        vertices.push_back({pos, glm::vec3(0.0f, -1.0f, 0.0f), glm::vec2(0.5f + 0.5f * cosAngle, 0.5f + 0.5f * sinAngle)});
+    }
 
-    int topCenterIdx = vertices.size() - 2;
-    int bottomCenterIdx = vertices.size() - 1;
+    // --- Generate top face vertices (with correct top normals) --- 
+    // Top center
+    int topCenterIdx = vertices.size();
+    vertices.push_back({glm::vec3(0.0f, halfHeight, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f), glm::vec2(0.5f, 0.5f)});
+    
+    // Top edge vertices (with top normal)
+    int topEdgeStartIdx = vertices.size();
+    for (int i = 0; i <= segments; i++) {
+        float angle = (float)i / segments * 2.0f * PI;
+        float cosAngle = cos(angle);
+        float sinAngle = sin(angle);
+        
+        glm::vec3 pos(radius * cosAngle, halfHeight, radius * sinAngle);
+        vertices.push_back({pos, glm::vec3(0.0f, 1.0f, 0.0f), glm::vec2(0.5f + 0.5f * cosAngle, 0.5f + 0.5f * sinAngle)});
+    }
 
-    // Generate side indices with correct winding order for outward normals
+    // --- Generate side indices --- 
     for (int i = 0; i < segments; i++) {
         int current = i * 2;
         int next = (i + 1) * 2;
@@ -186,18 +209,18 @@ Mesh* GeometryUtils::CreateCylinder(float radius, float height, int segments)
         indices.push_back(next);
     }
 
-    // Generate top face indices with correct winding order (outward normal +Y)
-    for (int i = 0; i < segments; i++) {
-        indices.push_back(topCenterIdx);
-        indices.push_back(((i + 1) % segments) * 2 + 1);
-        indices.push_back(i * 2 + 1);
-    }
-
-    // Generate bottom face indices with correct winding order (outward normal -Y)
+    // --- Generate bottom face indices --- 
     for (int i = 0; i < segments; i++) {
         indices.push_back(bottomCenterIdx);
-        indices.push_back(((i + 1) % segments) * 2);
-        indices.push_back(i * 2);
+        indices.push_back(bottomEdgeStartIdx + i + 1);
+        indices.push_back(bottomEdgeStartIdx + i);
+    }
+
+    // --- Generate top face indices --- 
+    for (int i = 0; i < segments; i++) {
+        indices.push_back(topCenterIdx);
+        indices.push_back(topEdgeStartIdx + i);
+        indices.push_back(topEdgeStartIdx + i + 1);
     }
 
     return new Mesh(vertices, indices, textures);
