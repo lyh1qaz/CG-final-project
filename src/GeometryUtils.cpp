@@ -16,35 +16,59 @@ Mesh* GeometryUtils::CreateCube()
     std::vector<unsigned int> indices;
     std::vector<Texture> textures;
 
-    // Cube vertex positions
-    float verticesPos[] = {
-        -0.5f, -0.5f, -0.5f,
-         0.5f, -0.5f, -0.5f,
-         0.5f,  0.5f, -0.5f,
-        -0.5f,  0.5f, -0.5f,
-        -0.5f, -0.5f,  0.5f,
-         0.5f, -0.5f,  0.5f,
-         0.5f,  0.5f,  0.5f,
-        -0.5f,  0.5f,  0.5f
+    // Cube vertices with correct normals and texture coordinates
+    // Each face has its own set of vertices with correct normals
+    Vertex cubeVertices[] = {
+        // Front face
+        {glm::vec3(-0.5f, -0.5f, -0.5f), glm::vec3(0.0f, 0.0f, -1.0f), glm::vec2(0.0f, 0.0f)},
+        {glm::vec3(0.5f, -0.5f, -0.5f), glm::vec3(0.0f, 0.0f, -1.0f), glm::vec2(1.0f, 0.0f)},
+        {glm::vec3(0.5f, 0.5f, -0.5f), glm::vec3(0.0f, 0.0f, -1.0f), glm::vec2(1.0f, 1.0f)},
+        {glm::vec3(-0.5f, 0.5f, -0.5f), glm::vec3(0.0f, 0.0f, -1.0f), glm::vec2(0.0f, 1.0f)},
+        
+        // Back face
+        {glm::vec3(-0.5f, -0.5f, 0.5f), glm::vec3(0.0f, 0.0f, 1.0f), glm::vec2(0.0f, 0.0f)},
+        {glm::vec3(0.5f, -0.5f, 0.5f), glm::vec3(0.0f, 0.0f, 1.0f), glm::vec2(1.0f, 0.0f)},
+        {glm::vec3(0.5f, 0.5f, 0.5f), glm::vec3(0.0f, 0.0f, 1.0f), glm::vec2(1.0f, 1.0f)},
+        {glm::vec3(-0.5f, 0.5f, 0.5f), glm::vec3(0.0f, 0.0f, 1.0f), glm::vec2(0.0f, 1.0f)},
+        
+        // Bottom face
+        {glm::vec3(-0.5f, -0.5f, -0.5f), glm::vec3(0.0f, -1.0f, 0.0f), glm::vec2(0.0f, 0.0f)},
+        {glm::vec3(0.5f, -0.5f, -0.5f), glm::vec3(0.0f, -1.0f, 0.0f), glm::vec2(1.0f, 0.0f)},
+        {glm::vec3(0.5f, -0.5f, 0.5f), glm::vec3(0.0f, -1.0f, 0.0f), glm::vec2(1.0f, 1.0f)},
+        {glm::vec3(-0.5f, -0.5f, 0.5f), glm::vec3(0.0f, -1.0f, 0.0f), glm::vec2(0.0f, 1.0f)},
+        
+        // Top face
+        {glm::vec3(-0.5f, 0.5f, -0.5f), glm::vec3(0.0f, 1.0f, 0.0f), glm::vec2(0.0f, 0.0f)},
+        {glm::vec3(0.5f, 0.5f, -0.5f), glm::vec3(0.0f, 1.0f, 0.0f), glm::vec2(1.0f, 0.0f)},
+        {glm::vec3(0.5f, 0.5f, 0.5f), glm::vec3(0.0f, 1.0f, 0.0f), glm::vec2(1.0f, 1.0f)},
+        {glm::vec3(-0.5f, 0.5f, 0.5f), glm::vec3(0.0f, 1.0f, 0.0f), glm::vec2(0.0f, 1.0f)},
+        
+        // Left face
+        {glm::vec3(-0.5f, -0.5f, -0.5f), glm::vec3(-1.0f, 0.0f, 0.0f), glm::vec2(0.0f, 0.0f)},
+        {glm::vec3(-0.5f, 0.5f, -0.5f), glm::vec3(-1.0f, 0.0f, 0.0f), glm::vec2(1.0f, 0.0f)},
+        {glm::vec3(-0.5f, 0.5f, 0.5f), glm::vec3(-1.0f, 0.0f, 0.0f), glm::vec2(1.0f, 1.0f)},
+        {glm::vec3(-0.5f, -0.5f, 0.5f), glm::vec3(-1.0f, 0.0f, 0.0f), glm::vec2(0.0f, 1.0f)},
+        
+        // Right face
+        {glm::vec3(0.5f, -0.5f, -0.5f), glm::vec3(1.0f, 0.0f, 0.0f), glm::vec2(0.0f, 0.0f)},
+        {glm::vec3(0.5f, 0.5f, -0.5f), glm::vec3(1.0f, 0.0f, 0.0f), glm::vec2(1.0f, 0.0f)},
+        {glm::vec3(0.5f, 0.5f, 0.5f), glm::vec3(1.0f, 0.0f, 0.0f), glm::vec2(1.0f, 1.0f)},
+        {glm::vec3(0.5f, -0.5f, 0.5f), glm::vec3(1.0f, 0.0f, 0.0f), glm::vec2(0.0f, 1.0f)}
     };
 
-    // Cube face indices
+    // Cube face indices (right-hand rule for outward normals)
     unsigned int cubeIndices[] = {
-        0, 1, 2, 2, 3, 0, // Front face
+        0, 3, 2, 2, 1, 0, // Front face
         4, 5, 6, 6, 7, 4, // Back face
-        0, 1, 5, 5, 4, 0, // Bottom face
-        2, 3, 7, 7, 6, 2, // Top face
-        0, 3, 7, 7, 4, 0, // Left face
-        1, 2, 6, 6, 5, 1  // Right face
+        8, 9, 10, 10, 11, 8, // Bottom face
+        12, 15, 14, 14, 13, 12, // Top face
+        16, 17, 18, 18, 19, 16, // Left face
+        20, 23, 22, 22, 21, 20  // Right face
     };
 
-    // Create vertices
-    for (int i = 0; i < 8; i++) {
-        Vertex vertex;
-        vertex.Position = glm::vec3(verticesPos[i * 3], verticesPos[i * 3 + 1], verticesPos[i * 3 + 2]);
-        // Simple normal calculation: each vertex's normal points to its face's normal direction
-        vertex.Normal = vertex.Position; // Cube's normal is the same as vertex position (center at origin)
-        vertices.push_back(vertex);
+    // Add vertices
+    for (int i = 0; i < 24; i++) {
+        vertices.push_back(cubeVertices[i]);
     }
 
     // Add indices
@@ -79,7 +103,8 @@ Mesh* GeometryUtils::CreateSphere(int latitudeSegments, int longitudeSegments)
             position.z = sinPhi * sinTheta;
 
             // Normal is the same as vertex position (since center is at origin)
-            glm::vec3 normal = position;
+            // Ensure normal is pointing outward by normalizing
+            glm::vec3 normal = glm::normalize(position);
 
             // Texture coordinates
             glm::vec2 texCoord;
@@ -96,15 +121,15 @@ Mesh* GeometryUtils::CreateSphere(int latitudeSegments, int longitudeSegments)
             unsigned int first = lat * (longitudeSegments + 1) + lon;
             unsigned int second = first + longitudeSegments + 1;
 
-            // First triangle
+            // First triangle (ensure correct winding order for outward normals)
             indices.push_back(first);
-            indices.push_back(second);
             indices.push_back(first + 1);
+            indices.push_back(second);
 
-            // Second triangle
-            indices.push_back(second);
-            indices.push_back(second + 1);
+            // Second triangle (ensure correct winding order for outward normals)
             indices.push_back(first + 1);
+            indices.push_back(second + 1);
+            indices.push_back(second);
         }
     }
 
@@ -127,48 +152,48 @@ Mesh* GeometryUtils::CreateCylinder(float radius, float height, int segments)
 
         // Bottom vertex
         glm::vec3 bottomPos(radius * cosAngle, -halfHeight, radius * sinAngle);
-        glm::vec3 bottomNormal(cosAngle, 0.0f, sinAngle);
+        glm::vec3 bottomNormal = glm::normalize(glm::vec3(cosAngle, 0.0f, sinAngle)); // Outward normal
         vertices.push_back({bottomPos, bottomNormal, glm::vec2((float)i / segments, 0.0f)});
 
         // Top vertex
         glm::vec3 topPos(radius * cosAngle, halfHeight, radius * sinAngle);
-        glm::vec3 topNormal(cosAngle, 0.0f, sinAngle);
+        glm::vec3 topNormal = glm::normalize(glm::vec3(cosAngle, 0.0f, sinAngle)); // Outward normal
         vertices.push_back({topPos, topNormal, glm::vec2((float)i / segments, 1.0f)});
     }
 
     // Generate top and bottom centers
-    // Top center
+    // Top center (normal: +Y)
     vertices.push_back({glm::vec3(0.0f, halfHeight, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f), glm::vec2(0.5f, 0.5f)});
-    // Bottom center
+    // Bottom center (normal: -Y)
     vertices.push_back({glm::vec3(0.0f, -halfHeight, 0.0f), glm::vec3(0.0f, -1.0f, 0.0f), glm::vec2(0.5f, 0.5f)});
 
     int topCenterIdx = vertices.size() - 2;
     int bottomCenterIdx = vertices.size() - 1;
 
-    // Generate side indices
+    // Generate side indices with correct winding order for outward normals
     for (int i = 0; i < segments; i++) {
         int current = i * 2;
         int next = (i + 1) * 2;
 
-        // First triangle
+        // First triangle (bottom to top to next top, counter-clockwise)
         indices.push_back(current);
-        indices.push_back(next);
         indices.push_back(current + 1);
-
-        // Second triangle
-        indices.push_back(next);
         indices.push_back(next + 1);
-        indices.push_back(current + 1);
+
+        // Second triangle (bottom to next top to next bottom, counter-clockwise)
+        indices.push_back(current);
+        indices.push_back(next + 1);
+        indices.push_back(next);
     }
 
-    // Generate top face indices
+    // Generate top face indices with correct winding order (outward normal +Y)
     for (int i = 0; i < segments; i++) {
         indices.push_back(topCenterIdx);
-        indices.push_back(i * 2 + 1);
         indices.push_back(((i + 1) % segments) * 2 + 1);
+        indices.push_back(i * 2 + 1);
     }
 
-    // Generate bottom face indices
+    // Generate bottom face indices with correct winding order (outward normal -Y)
     for (int i = 0; i < segments; i++) {
         indices.push_back(bottomCenterIdx);
         indices.push_back(((i + 1) % segments) * 2);
@@ -193,6 +218,7 @@ Mesh* GeometryUtils::CreateCone(float radius, float height, int segments)
         float angle = (float)i / segments * 2.0f * PI;
         float x = radius * cos(angle);
         float z = radius * sin(angle);
+        // Bottom vertices have downward normal (-Y)
         vertices.push_back({glm::vec3(x, 0.0f, z), glm::vec3(0.0f, -1.0f, 0.0f), glm::vec2(0.5f + 0.5f * cos(angle), 0.5f + 0.5f * sin(angle))});
     }
     
@@ -201,23 +227,76 @@ Mesh* GeometryUtils::CreateCone(float radius, float height, int segments)
     
     int apexIdx = vertices.size() - 1;
     
-    // Generate bottom face indices
+    // Generate bottom face indices with correct winding order (counter-clockwise for -Y normal)
     for (int i = 1; i < segments + 1; i++) {
         indices.push_back(0);
-        indices.push_back(i + 1);
         indices.push_back(i);
+        indices.push_back(i + 1);
     }
     
-    // Generate side face indices
+    // Generate side face indices with correct winding order for outward normals
     for (int i = 1; i < segments + 1; i++) {
         indices.push_back(apexIdx);
-        indices.push_back(i);
         indices.push_back(i + 1);
+        indices.push_back(i);
     }
 
-    // Calculate side face normals
+    // Calculate side face normals (outward pointing)
     for (int i = 1; i < segments + 2; i++) {
-        vertices[i].Normal = CalculateNormal(vertices[apexIdx].Position, vertices[i].Position, vertices[(i % segments) + 1].Position);
+        // Calculate triangle vertices
+        glm::vec3 v0 = vertices[apexIdx].Position;
+        // 使用与索引顺序一致的顶点顺序：apexIdx -> i+1 -> i
+        glm::vec3 v1 = vertices[(i % segments) + 1].Position;
+        glm::vec3 v2 = vertices[i].Position;
+        
+        // Calculate normal using cross product with correct winding order
+        // Use (v1 - v0) × (v2 - v0) to get outward normal
+        glm::vec3 edge1 = v1 - v0;
+        glm::vec3 edge2 = v2 - v0;
+        glm::vec3 normal = glm::normalize(glm::cross(edge1, edge2));
+        
+        // Update the vertex normal
+        vertices[i].Normal = normal;
+    }
+
+    return new Mesh(vertices, indices, textures);
+}
+
+Mesh* GeometryUtils::CreatePlane(float width, float depth)
+{
+    std::vector<Vertex> vertices;
+    std::vector<unsigned int> indices;
+    std::vector<Texture> textures;
+
+    float halfWidth = width / 2.0f;
+    float halfDepth = depth / 2.0f;
+
+    // Plane vertices with correct normals and texture coordinates
+    Vertex planeVertices[] = {
+        // Bottom-left corner
+        {glm::vec3(-halfWidth, 0.0f, halfDepth), glm::vec3(0.0f, 1.0f, 0.0f), glm::vec2(0.0f, 0.0f)},
+        // Bottom-right corner
+        {glm::vec3(halfWidth, 0.0f, halfDepth), glm::vec3(0.0f, 1.0f, 0.0f), glm::vec2(1.0f, 0.0f)},
+        // Top-right corner
+        {glm::vec3(halfWidth, 0.0f, -halfDepth), glm::vec3(0.0f, 1.0f, 0.0f), glm::vec2(1.0f, 1.0f)},
+        // Top-left corner
+        {glm::vec3(-halfWidth, 0.0f, -halfDepth), glm::vec3(0.0f, 1.0f, 0.0f), glm::vec2(0.0f, 1.0f)}
+    };
+
+    // Plane indices (two triangles forming a quad)
+    unsigned int planeIndices[] = {
+        0, 1, 2,  // First triangle
+        0, 2, 3   // Second triangle
+    };
+
+    // Add vertices
+    for (int i = 0; i < 4; i++) {
+        vertices.push_back(planeVertices[i]);
+    }
+
+    // Add indices
+    for (int i = 0; i < 6; i++) {
+        indices.push_back(planeIndices[i]);
     }
 
     return new Mesh(vertices, indices, textures);

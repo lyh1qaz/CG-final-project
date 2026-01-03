@@ -18,3 +18,7 @@ Mesh* GeometryGenerator::CreateCylinder(float radius, float height, int segments
 Mesh* GeometryGenerator::CreateCone(float radius, float height, int segments) {
     return GeometryUtils::CreateCone(radius, height, segments);
 }
+
+Mesh* GeometryGenerator::CreatePlane(float width, float depth) {
+    return GeometryUtils::CreatePlane(width, depth);
+}

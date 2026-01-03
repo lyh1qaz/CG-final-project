@@ -256,7 +256,14 @@ void Application::RenderFileDialog() {
         if (ImGui::Button("Save", ImVec2(100, 0))) {
             if (strlen(saveFileName) > 0) {
                 try {
-                    fs::path fullPath = fs::path(currentDirectory) / saveFileName;
+                    std::string fileName(saveFileName);
+                    
+                    // 自动添加.obj扩展名（如果没有的话）
+                    if (!fileFilter.empty() && fileName.find(fileFilter) == std::string::npos) {
+                        fileName += fileFilter;
+                    }
+                    
+                    fs::path fullPath = fs::path(currentDirectory) / fileName;
                     std::string fullPathStr = fullPath.string();
                     
                     // 安全地复制字符串，避免缓冲区溢出
@@ -584,6 +591,13 @@ void Application::RenderUI() {
         Mesh* mesh = GeometryGenerator::CreateCone(0.5f, 1.0f, 20);
         SceneObject* newObj = new SceneObject("New Cone", mesh);
         newObj->position = glm::vec3(0, 0.5f, 0);
+        scene->AddObject(newObj);
+    }
+    ImGui::SameLine();
+    if (ImGui::Button("Plane", ImVec2(60, 0))) {
+        Mesh* mesh = GeometryGenerator::CreatePlane(2.0f, 2.0f);
+        SceneObject* newObj = new SceneObject("New Plane", mesh);
+        newObj->position = glm::vec3(0, 0.0f, 0);
         scene->AddObject(newObj);
     }
 

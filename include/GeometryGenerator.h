@@ -14,6 +14,7 @@ public:
     static Mesh* CreateSphere(int segments);
     static Mesh* CreateCylinder(float radius, float height, int segments);
     static Mesh* CreateCone(float radius, float height, int segments);
+    static Mesh* CreatePlane(float width, float depth);
 };
 
 #endif
